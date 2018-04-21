@@ -19,12 +19,11 @@ type Configuration struct {
 
 var config Configuration
 
+var bot *tgbotapi.BotAPI
+
 func main() {
-	file, _ := os.Open("config.json")
-	defer file.Close()
-	decoder := json.NewDecoder(file)
-	config = Configuration{}
-	decoder.Decode(&config)
+	readConfig()
+	bot, _ = tgbotapi.NewBotAPI(config.Token)
 	argsWithoutProg := os.Args[1:]
 	phrase := strings.Join(argsWithoutProg, " ")
 	funLevel := analyze(phrase)
@@ -32,9 +31,17 @@ func main() {
 	postResult(belPhrase, funLevel)
 }
 
+func readConfig() {
+	file, _ := os.Open("config.json")
+	defer file.Close()
+	decoder := json.NewDecoder(file)
+	config = Configuration{}
+	decoder.Decode(&config)
+}
+
 func analyze(phrase string) int {
 	rand.Seed(time.Now().UTC().UnixNano())
-	x := rand.Intn(5) - 5
+	x := rand.Intn(10) - 10
 	return x
 }
 
@@ -58,7 +65,6 @@ func postResult(phrase string, level int) {
 	} else {
 		result += strings.Repeat(")", level)
 	}
-	bot, _ := tgbotapi.NewBotAPI(config.Token)
 	msg := tgbotapi.NewMessage(config.ChatId, result)
 	bot.Send(msg)
 }
