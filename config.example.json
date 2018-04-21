@@ -1,4 +1,5 @@
 {
   "Token": "TOKEN",
-  "ChatId": 1
+  "ChatId": 1,
+  "Sentiment": "TOKEN"
 }

@@ -2,19 +2,25 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
-	"math/rand"
+	"net/http"
+	"net/url"
 	"os"
 	"strings"
-	"time"
 
 	trans "github.com/aerokite/go-google-translate/pkg"
 	"gopkg.in/telegram-bot-api.v4"
 )
 
 type Configuration struct {
-	Token  string
-	ChatId int64
+	Token     string
+	ChatId    int64
+	Sentiment string
+}
+
+type Response struct {
+	Score float32 `json:score`
 }
 
 var config Configuration
@@ -40,9 +46,15 @@ func readConfig() {
 }
 
 func analyze(phrase string) int {
-	rand.Seed(time.Now().UTC().UnixNano())
-	x := rand.Intn(10) - 10
-	return x
+	pageUrl := "https://api.repustate.com/v3/" + config.Sentiment + "/score.json"
+	resp, _ := http.PostForm(pageUrl,
+		url.Values{"text": {phrase}, "lang": {"ru"}})
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	s := Response{}
+	json.Unmarshal(body, &s)
+	score := int(s.Score * 5)
+	return score
 }
 
 func translate(phrase string) string {
