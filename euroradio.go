@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"os"
 	"strings"
+	"time"
 
 	trans "github.com/aerokite/go-google-translate/pkg"
 	"gopkg.in/telegram-bot-api.v4"
@@ -32,6 +33,7 @@ func main() {
 }
 
 func analyze(phrase string) int {
+	rand.Seed(time.Now().UTC().UnixNano())
 	x := rand.Intn(5) - 5
 	return x
 }
